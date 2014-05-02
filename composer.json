@@ -1,6 +1,7 @@
 {
     "name": "grumpydictator/gchart",
-    "description": "",
+    "description": "GChart is a small package that allows you to easily generate data for the Google Charts API.",
+    "license": "MIT",
     "authors": [
         {
             "name": "James Cole",
