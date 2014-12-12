@@ -10,11 +10,11 @@ namespace Grumpydictator\Gchart;
 class GChart
 {
 
-    private $_cols = [];
-    private $_rows = [];
-    private $_data = [];
-    private $_certainty = [];
-    private $_interval = [];
+    private $_cols        = [];
+    private $_rows        = [];
+    private $_data        = [];
+    private $_certainty   = [];
+    private $_interval    = [];
     private $_annotations = [];
 
     /**
@@ -31,6 +31,8 @@ class GChart
      * @param      $name
      * @param      $type
      * @param null $role
+     *
+     * @return int
      */
     public function addColumn($name, $type, $role = null)
     {
@@ -39,7 +41,8 @@ class GChart
         }
         $this->_cols[] = ['name' => $name, 'type' => $type, 'role' => $role,
                           'id'   => \Str::slug($name)];
-        return (count($this->_cols) -1);
+
+        return (count($this->_cols) - 1);
     }
 
     /**
@@ -62,10 +65,12 @@ class GChart
      */
     public function addRow()
     {
-        $args = func_get_args();
+        $args          = func_get_args();
         $this->_rows[] = $args;
     }
-    public function addRowArray($array) {
+
+    public function addRowArray($array)
+    {
         $this->_rows[] = $array;
     }
 
@@ -131,11 +136,10 @@ class GChart
             if (isset($this->_interval[$index])) {
 
 
-
                 // add intervals for each one found.
-                foreach($this->_interval[$index] as $nr => $bool) {
+                foreach ($this->_interval[$index] as $nr => $bool) {
                     $this->_data['cols'][] = ['type' => 'number',
-                                              'id' => 'i'.$index.$nr,
+                                              'id'   => 'i' . $index . $nr,
                                               'p'    => ['role' => 'interval']];
                 }
 
@@ -144,27 +148,26 @@ class GChart
         }
 
 
-
         $this->_data['rows'] = [];
-        foreach ($this->_rows as $rowindex => $row) {
-            foreach ($row as $cellindex => $value) {
+        foreach ($this->_rows as $rowIndex => $row) {
+            foreach ($row as $cellIndex => $value) {
                 // catch date and properly format for JSON
-                if (isset($this->_cols[$cellindex]['type'])
-                    && $this->_cols[$cellindex]['type'] == 'date'
+                if (isset($this->_cols[$cellIndex]['type'])
+                    && $this->_cols[$cellIndex]['type'] == 'date'
                 ) {
-                    $month = intval($value->format('n')) - 1;
+                    $month   = intval($value->format('n')) - 1;
                     $dateStr = $value->format('Y, ' . $month . ', j');
-                    $this->_data['rows'][$rowindex]['c'][$cellindex]['v']
-                        = 'Date(' . $dateStr . ')';
+                    $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v']
+                             = 'Date(' . $dateStr . ')';
                     unset($month, $dateStr);
                 } else {
                     if (is_array($value)) {
-                        $this->_data['rows'][$rowindex]['c'][$cellindex]['v']
+                        $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v']
                             = $value['v'];
-                        $this->_data['rows'][$rowindex]['c'][$cellindex]['f']
+                        $this->_data['rows'][$rowIndex]['c'][$cellIndex]['f']
                             = $value['f'];
                     } else {
-                        $this->_data['rows'][$rowindex]['c'][$cellindex]['v']
+                        $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v']
                             = $value;
                     }
                 }
@@ -174,14 +177,26 @@ class GChart
 
     /**
      * Returns the chart data.
+     *
      * @return array
      */
     public function getData()
     {
-//        echo '<pre>';
-//        var_dump($this->_data);
-//        echo '</pre>';exit;
         return $this->_data;
+    }
+
+    /**
+     * @return bool
+     */
+    public function clear()
+    {
+        $this->_cols        = [];
+        $this->_rows        = [];
+        $this->_data        = [];
+        $this->_certainty   = [];
+        $this->_interval    = [];
+        $this->_annotations = [];
+        return true;
     }
 
 }
