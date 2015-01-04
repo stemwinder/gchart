@@ -10,11 +10,11 @@ namespace Grumpydictator\Gchart;
 class GChart
 {
 
-    private $_cols        = [];
-    private $_rows        = [];
-    private $_data        = [];
-    private $_certainty   = [];
-    private $_interval    = [];
+    private $_cols = [];
+    private $_rows = [];
+    private $_data = [];
+    private $_certainty = [];
+    private $_interval = [];
     private $_annotations = [];
 
     /**
@@ -65,7 +65,7 @@ class GChart
      */
     public function addRow()
     {
-        $args          = func_get_args();
+        $args = func_get_args();
         $this->_rows[] = $args;
     }
 
@@ -113,10 +113,10 @@ class GChart
         $this->_data = [];
 
         foreach ($this->_cols as $index => $column) {
-            $this->_data['cols'][] = ['id'    => $column['id'],
+            $this->_data['cols'][] = ['id' => $column['id'],
                                       'label' => $column['name'],
-                                      'type'  => $column['type'],
-                                      'p'     => ['role' => $column['role']]];
+                                      'type' => $column['type'],
+                                      'p' => ['role' => $column['role']]];
             if (in_array($index, $this->_annotations)) {
                 // add an annotation column
                 $this->_data['cols'][] = ['type' => 'string',
@@ -155,20 +155,32 @@ class GChart
                 if (isset($this->_cols[$cellIndex]['type'])
                     && $this->_cols[$cellIndex]['type'] == 'date'
                 ) {
-                    $month   = intval($value->format('n')) - 1;
+                    $month = intval($value->format('n')) - 1;
                     $dateStr = $value->format('Y, ' . $month . ', j');
                     $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v']
-                             = 'Date(' . $dateStr . ')';
+                        = 'Date(' . $dateStr . ')';
                     unset($month, $dateStr);
                 } else {
-                    if (is_array($value)) {
+                    if (isset($this->_cols[$cellIndex]['type'])
+                        && $this->_cols[$cellIndex]['type'] == 'datetime'
+                    ) {
+                        $month = intval($value->format('n')) - 1;
+                        $dateStr = $value->format(
+                            'Y, ' . $month . ', j, G, i, s'
+                        );
                         $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v']
-                            = $value['v'];
-                        $this->_data['rows'][$rowIndex]['c'][$cellIndex]['f']
-                            = $value['f'];
+                            = 'Date(' . $dateStr . ')';
+                        unset($month, $dateStr);
                     } else {
-                        $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v']
-                            = $value;
+                        if (is_array($value)) {
+                            $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v']
+                                = $value['v'];
+                            $this->_data['rows'][$rowIndex]['c'][$cellIndex]['f']
+                                = $value['f'];
+                        } else {
+                            $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v']
+                                = $value;
+                        }
                     }
                 }
             }
@@ -190,11 +202,11 @@ class GChart
      */
     public function clear()
     {
-        $this->_cols        = [];
-        $this->_rows        = [];
-        $this->_data        = [];
-        $this->_certainty   = [];
-        $this->_interval    = [];
+        $this->_cols = [];
+        $this->_rows = [];
+        $this->_data = [];
+        $this->_certainty = [];
+        $this->_interval = [];
         $this->_annotations = [];
         return true;
     }
