@@ -151,45 +151,46 @@ class GChart
         $this->_data['rows'] = [];
         foreach ($this->_rows as $rowIndex => $row) {
             foreach ($row as $cellIndex => $value) {
+                // get type:
+                $type = isset($this->_cols[$cellIndex]['type']) ? $this->_cols[$cellIndex]['type'] : 'notype';
 
-                // if isset type:
-                if (isset($this->_cols[$cellIndex]['type'])) {
+                switch ($type) {
+                    // catch date and properly format for JSON
+                    case 'date':
+                        $month   = intval($value->format('n')) - 1;
+                        $dateStr = $value->format('Y, ' . $month . ', j');
+                        // add to internal row set:
+                        $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v'] = 'Date(' . $dateStr . ')';
+                        unset($month, $dateStr);
+                        break;
+                    // catch datetime and properly format for JSON
+                    case 'datetime':
+                        $month   = intval($value->format('n')) - 1;
+                        $dateStr = $value->format('Y, ' . $month . ', j, G, i, s');
 
-                    switch ($this->_cols[$cellIndex]['type']) {
-                        // catch date and properly format for JSON
-                        case 'date':
-                            $month   = intval($value->format('n')) - 1;
-                            $dateStr = $value->format('Y, ' . $month . ', j');
-                            // add to internal row set:
-                            $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v'] = 'Date(' . $dateStr . ')';
-                            unset($month, $dateStr);
-                            break;
-                        // catch datetime and properly format for JSON
-                        case 'datetime':
-                            $month   = intval($value->format('n')) - 1;
-                            $dateStr = $value->format('Y, ' . $month . ', j, G, i, s');
+                        $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v'] = 'Date(' . $dateStr . ')';
+                        unset($month, $dateStr);
+                        break;
 
-                            $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v'] = 'Date(' . $dateStr . ')';
-                            unset($month, $dateStr);
-                            break;
+                    case 'timeofday':
+                        $array                                                = [
+                            intval($value->format('H')),
+                            intval($value->format('m')),
+                            intval($value->format('i')),
+                        ];
+                        $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v'] = $array;
+                        break;
 
-                        case 'timeofday':
-                            $array = [
-                                intval($value->format('H')),
-                                intval($value->format('m')),
-                                intval($value->format('i')),
-                            ];
-                            $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v'] = $array;
-                            break;
-                    }
-                } else {
-                    if (is_array($value)) {
-                        $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v'] = $value['v'];
-                        $this->_data['rows'][$rowIndex]['c'][$cellIndex]['f'] = $value['f'];
-                    } else {
-                        $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v'] = $value;
-                    }
+                    default:
+                        if (is_array($value)) {
+                            $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v'] = $value['v'];
+                            $this->_data['rows'][$rowIndex]['c'][$cellIndex]['f'] = $value['f'];
+                        } else {
+                            $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v'] = $value;
+                        }
+                        break;
                 }
+
             }
         }
     }
