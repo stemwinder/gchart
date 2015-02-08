@@ -39,8 +39,9 @@ class GChart
         if (is_null($role)) {
             $role = count($this->_cols) == 0 ? 'domain' : 'data';
         }
+        $id = str_replace([' '],'',strtolower($name));
         $this->_cols[] = ['name' => $name, 'type' => $type, 'role' => $role,
-                          'id'   => \Str::slug($name)];
+                          'id'   => $id];
 
         return (count($this->_cols) - 1);
     }
