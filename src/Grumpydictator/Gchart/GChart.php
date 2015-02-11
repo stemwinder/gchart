@@ -176,8 +176,8 @@ class GChart
                     case 'timeofday':
                         $array                                                = [
                             intval($value->format('H')),
-                            intval($value->format('m')),
                             intval($value->format('i')),
+                            intval($value->format('s')),
                         ];
                         $this->_data['rows'][$rowIndex]['c'][$cellIndex]['v'] = $array;
                         break;
