@@ -15,6 +15,5 @@
         "psr-0": {
             "Grumpydictator\\Gchart": "src/"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
